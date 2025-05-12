@@ -1,0 +1,48 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" [ngClass]="customClass" >
+  <!-- Mensaje de error general -->
+  <p-message *ngIf="form.invalid && form.dirty" 
+             severity="error" 
+             icon="pi pi-times-circle" 
+             styleClass="mb-2">
+    Validation Failed
+  </p-message>
+
+  <!-- Campos dinámicos -->
+  <ng-container *ngFor="let field of sections">
+    <div class="flex flex-col gap-1 input-container">
+      <!-- Input Text -->
+      <input *ngIf="field.type === 'input'"
+             pInputText
+             [placeholder]="field.placeholder || field.label"
+             [formControlName]="field.name"
+             [class.ng-invalid]="getControl(field.name)?.invalid && getControl(field.name)?.dirty"
+             [class.ng-dirty]="getControl(field.name)?.dirty">
+
+      <!-- Select -->
+      <p-dropdown *ngIf="field.type === 'select'"
+                  [options]="field.options || []"
+                  [formControlName]="field.name"
+                  optionLabel="label"
+                  optionValue="value"
+                  [class.ng-invalid]="getControl(field.name)?.invalid && getControl(field.name)?.dirty"
+                  [class.ng-dirty]="getControl(field.name)?.dirty">
+      </p-dropdown>
+
+      <!-- Mensajes de error -->
+      <p-message *ngIf="getControl(field.name)?.invalid && getControl(field.name)?.dirty"
+                 severity="error"
+                 variant="simple"
+                 size="small">
+        <ng-container *ngIf="getControl(field.name)?.errors?.['required']">
+          {{ field.label }} es requerido
+        </ng-container>
+        <ng-container *ngIf="getControl(field.name)?.errors?.['email']">
+          {{ field.label }} no es válido
+        </ng-container>
+      </p-message>
+    </div>
+  </ng-container>
+
+  <!-- Botón de envío -->
+  <button pButton type="submit" label="Enviar" class="p-button-success input-container"></button>
+</form>
