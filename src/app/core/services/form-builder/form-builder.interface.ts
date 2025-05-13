@@ -1,5 +1,5 @@
 export interface DynamicField {
-  type: 'input' | 'select' | 'checkbox' | 'textarea';
+  render: 'input' | 'select' | 'checkbox' | 'textarea' | 'custom';
   name: string;
   label: string;
   placeholder?: string;

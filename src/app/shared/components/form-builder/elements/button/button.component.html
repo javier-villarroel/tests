@@ -1,0 +1,17 @@
+<button
+  pButton
+  [type]="type"
+  [icon]="loading ? '' : icon"
+  [iconPos]="iconPos"
+  [label]="loading ? '' : label"
+  [disabled]="disabled || loading"
+  [class]="buttonClasses"
+>
+  <p-progressSpinner 
+    *ngIf="loading" 
+    [style]="{ width: '20px', height: '20px' }" 
+    strokeWidth="6"
+    ariaLabel="loading"
+    class="mr-2"
+  ></p-progressSpinner>
+</button>

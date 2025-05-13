@@ -1,29 +1,35 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormBuilderComponent } from '../../shared/components/form-builder/form-builder.component';
-import { DynamicFormService } from '../../core/services/form-builder/form-builder.service';
-import { USER_FORM_SECTIONS } from './form-object.constants';
+import { userSections } from './form-object.constants';
+import { FormPageWrapperComponent } from '../../shared/components/form-page-wrapper/form-page-wrapper.component';
+import { ButtonComponent } from '../../shared/components/form-builder/elements/button/button.component';
 
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [FormBuilderComponent],
+  imports: [FormBuilderComponent, FormPageWrapperComponent, ButtonComponent],
   templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css'],
 })
-export class UserFormComponent implements OnInit {
-  private dynamicFormService = inject(DynamicFormService);  // lo que antes era constructor
-
-  // constructor(private dynamicFormService: DynamicFormService) {}
-
-  userForm!: FormGroup;
-  sections = USER_FORM_SECTIONS;
-
-  ngOnInit(): void {
-    this.userForm = this.dynamicFormService.createForm(this.sections);
+export class UserFormComponent { 
+  form: FormGroup;
+  sections = userSections; 
+  
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      nombre: ['', Validators.required],
+      gender: ['', Validators.required]
+    });
   }
 
-  onSubmit(formData: any) {
-    console.log('Form submitted:', formData);
+  onSubmit(values: any) {
+    console.log('Form submitted:', values);
+    // Handle form submission
+  }
+
+  save(){
+    
   }
 }

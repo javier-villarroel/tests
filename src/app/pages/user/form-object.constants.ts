@@ -1,36 +1,113 @@
-import { DynamicField } from "../../core/services/form-builder/form-builder.interface";
-
-export const USER_FORM_SECTIONS: DynamicField[] = [
+export const userSections = [
   {
-    type: 'input',
-    name: 'username',
-    label: 'Username',
-    placeholder: 'Enter your username',
-    validation: {
-      required: true,
-      minLength: 3,
-    },
+    title: 'Personal Information',
+    gridColumns: 4,
+    fields: [
+      {
+        render: 'input',
+        props: {
+          name: 'firstName',
+          label: 'First Name',
+          tabIndex: 1,
+          placeholder: 'Enter your first name',
+          className: 'mt-1' 
+        }
+      },
+      {
+        render: 'input',
+        props: {
+          name: 'firstName',
+          label: 'First Name',
+          tabIndex: 1,
+          placeholder: 'Enter your first name',
+          className: 'w-24' 
+        }
+      },
+      {
+        render: 'input',
+        props: {
+          name: 'lastName',
+          label: 'Last Name',
+          tabIndex: 2,
+          placeholder: 'Enter your last name',
+          className: 'mt-4' 
+        }
+      },
+      {
+        render: 'select',
+        props: {
+          name: 'gender',
+          label: 'Gender',
+          tabIndex: 3,
+          options: [
+            { value: 'male', label: 'Male' },
+            { value: 'female', label: 'Female' },
+            { value: 'other', label: 'Other' }
+          ],
+          className: 'mt-1' 
+        }
+      }
+    ]
   },
   {
-    type: 'input',
-    name: 'email',
-    label: 'Email',
-    placeholder: 'Enter your email',
-    validation: {
-      required: true,
-      email: true,
-    },
-  },
-  {
-    type: 'select',
-    name: 'role',
-    label: 'User Role',
-    options: [
-      { value: 'admin', label: 'Administrator' },
-      { value: 'user', label: 'Regular User' },
-    ],
-    validation: {
-      required: true,
-    },
-  },
+    title: 'Personal Information',
+    gridColumns: 2,
+    fields: [
+      {
+        render: 'button',
+        props: {
+          type: 'type',
+          label: "Agregar",
+          className: 'w-full' ,
+          click: () => {
+            console.log('Button clicked');
+          }
+        }
+      },
+      {
+        render: 'input',
+        props: {
+          name: 'nombre',
+          label: 'First Name',
+          tabIndex: 1,
+          placeholder: 'Enter your first name',
+          className: 'mt-1' 
+        }
+      },
+      {
+        render: 'input',
+        props: {
+          name: 'firstName',
+          label: 'First Name',
+          tabIndex: 1,
+          placeholder: 'Enter your first name',
+          className: 'w-24' 
+        }
+      },
+      {
+        render: 'input',
+        props: {
+          name: 'lastName',
+          label: 'Last Name',
+          tabIndex: 2,
+          placeholder: 'Enter your last name',
+          className: 'mt-4' 
+        }
+      },
+      {
+        render: 'select',
+        props: {
+          name: 'gender',
+          label: 'Gender',
+          tabIndex: 3,
+          options: [
+            { value: 'male', label: 'Male' },
+            { value: 'female', label: 'Female' },
+            { value: 'other', label: 'Other' }
+          ],
+          className: 'mt-1' 
+        }
+      }
+    ]
+  }
 ];

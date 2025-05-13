@@ -1,8 +1,16 @@
-<div class="center-container">
-    <form-builder 
-        [sections]="sections" 
-        [form]="userForm"
-        [customClass]="'custom-form-styles'"
-        (formSubmit)="onSubmit($event)">
-    </form-builder>
-  </div> 
+<!-- <app-button 
+  label="Buscar" 
+  icon="pi pi-search" 
+  iconPos="right"
+  [rounded]="true"
+  class="custom-class"
+></app-button> -->
+<app-form-page-wrapper>
+  <app-form-builder 
+    [form]="form" 
+    [sections]="sections" 
+    [card]="true"
+    [buttonTitle]="'Guardar Cambios'"
+    (submit)="onSubmit($event)">
+  </app-form-builder>
+</app-form-page-wrapper>
