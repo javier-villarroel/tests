@@ -4,54 +4,35 @@ import { FormBuilderComponent } from '../../shared/components/form-builder/form-
 import { userSections } from './form-object.constants';
 import { FormPageWrapperComponent } from '../../shared/components/form-page-wrapper/form-page-wrapper.component';
 import { TableComponent } from '../../shared/components/form-builder/elements/table/table.component';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [FormBuilderComponent, FormPageWrapperComponent,TableComponent],
+  imports: [FormBuilderComponent, FormPageWrapperComponent, TableComponent],
   templateUrl: './user.component.html',
 })
-export class UserFormComponent { 
+export class UserFormComponent {
   form: FormGroup;
-  sections = userSections; 
+  sections = userSections;
+  columns = [
+    { field: 'name', header: 'Nombre', width: '40%', type: 'text' },
+    { field: 'url', header: 'URL', width: '60%', type: 'text' },
+    { field: 'status', header: 'Estado', width: '120px', type: 'status' }
+  ];
+  data: any[] = [];
+  loading = false;
+  paginator = true;
+  rows = 10;
+  first = 0;
+  rowsPerPageOptions = [10, 20, 50];
+  totalRecords = 0;
+  filterValue = '';
+  nameFilter = '';
+  urlFilter = '';
+  statusFilter = '';
 
-columns = [
-  { field: 'name', header: 'Nombre', width: '25%', type: 'text' },
-  { field: 'country.name', header: 'País', width: '20%', type: 'text' },
-  { field: 'representative.name', header: 'Representante', width: '20%', type: 'text' },
-  { field: 'status', header: 'Estado', width: '15%', type: 'status' },
-  { field: 'verified', header: 'Verificado', width: '10%', type: 'boolean' }
-];
-
-data = [
-  {
-    id: 1,
-    name: 'John Doe',
-    country: { name: 'USA', code: 'us' },
-    representative: { name: 'Agent Smith', image: 'agent-smith.png' },
-    status: 'active',
-    verified: true
-  },
-  {
-    id: 2,
-    name: 'pedro',
-    country: { name: 'COLOMBIA', code: 'col' },
-    representative: { name: 'pedrito', image: 'agent-smith.png' },
-    status: 'inactive',
-    verified: false
-  },
-  {
-    id: 3,
-    name: 'lorman',
-    country: { name: 'MEXICO', code: 'mex' },
-    representative: { name: 'lorman', image: 'agent-smith.png' },
-    status: 'active',
-    verified: true
-  },
-];
-  
-  
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private http: HttpClient) {
     this.form = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -61,7 +42,49 @@ data = [
   }
 
   ngOnInit() {
-    console.log('data:', this.data);
+    this.loadPokemons(0, this.rows);
+  }
+
+  loadPokemons(
+    page: number,
+    size: number,
+    global: string = '',
+    nameFilter: string = '',
+    urlFilter: string = '',
+    statusFilter: string = ''
+  ) {
+    this.loading = true;
+    const offset = page * size;
+    this.http.get<any>(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${size}`)
+      .subscribe(res => {
+        const possibleStatuses = ['Activo', 'Inactivo', 'Pendiente'];
+        let results = res.results.map((item: any, idx: number) => ({
+          ...item,
+          status: possibleStatuses[idx % 3]
+        }));
+        if (global) {
+          results = results.filter((p: any) => p.name.toLowerCase().includes(global.toLowerCase()));
+        }
+        if (nameFilter) {
+          results = results.filter((p: any) => p.name.toLowerCase().includes(nameFilter.toLowerCase()));
+        }
+        if (urlFilter) {
+          results = results.filter((p: any) => p.url.toLowerCase().includes(urlFilter.toLowerCase()));
+        }
+        if (statusFilter) {
+          results = results.filter((p: any) => p.status === statusFilter);
+        }
+        this.data = results;
+        this.totalRecords = 1118; 
+        this.loading = false;
+      });
+  }
+
+  onPageChange(event: any) {
+    this.first = event.first;
+    const page = event.first / event.rows;
+    this.rows = event.rows;
+    this.loadPokemons(page, this.rows, this.filterValue, this.nameFilter, this.urlFilter, this.statusFilter);
   }
 
   onRowSelect(event: any) {
@@ -72,12 +95,24 @@ data = [
     console.log('Acción:', event.action, 'Datos:', event.data);
   }
 
-  onSubmit(values: any) {
-    console.log('Form submitted:', values);
-    // Handle form submission
+  onFilter(event: any) {
+    const global = event.filters['global']?.value || '';
+    const nameFilter = event.filters['name']?.value || '';
+    const urlFilter = event.filters['url']?.value || '';
+    const statusFilter = event.filters['status']?.value || '';
+
+    this.filterValue = global;
+    this.nameFilter = nameFilter;
+    this.urlFilter = urlFilter;
+    this.statusFilter = statusFilter;
+
+    this.first = 0;
+    this.loadPokemons(0, this.rows, global, nameFilter, urlFilter, statusFilter);
   }
 
-  save(){
-    
+  onSubmit(values: any) {
+    console.log('Form submitted:', values);
   }
+
+  save() {}
 }

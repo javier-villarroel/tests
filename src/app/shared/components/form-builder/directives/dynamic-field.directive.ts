@@ -44,7 +44,6 @@ export class DynamicFieldDirective implements OnChanges, OnInit {
     this.viewContainerRef.clear();
     this.componentRef = this.viewContainerRef.createComponent(component);
     
-    // Set component inputs
     this.componentRef.instance.form = this.form;
     Object.assign(this.componentRef.instance, this.fieldConfig.props);
   }

@@ -7,12 +7,14 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TooltipModule } from 'primeng/tooltip';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-table',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TableModule,
     ButtonModule,
     InputTextModule,
@@ -26,39 +28,32 @@ import { TooltipModule } from 'primeng/tooltip';
 export class TableComponent implements OnInit, OnChanges {
   @Input() data: any[] = [];
   @Input() columns: any[] = [];
-  @Input() filters: any = {};
   @Input() loading: boolean = false;
   @Input() paginator: boolean = true;
   @Input() rows: number = 10;
+  @Input() first: number = 0;
   @Input() rowsPerPageOptions: number[] = [10, 25, 50];
-
+  @Input() totalRecords: number = 0;
+  @Output() onPage = new EventEmitter<any>();
   @Output() rowSelect = new EventEmitter<any>();
   @Output() rowAction = new EventEmitter<any>();
+  @Output() onFilter = new EventEmitter<any>();
 
   globalFilterFields: string[] = [];
-  filteredData: any[] = [];
 
   statuses = [
-    { label: 'Activo', value: 'active' },
-    { label: 'Inactivo', value: 'inactive' },
-    { label: 'Pendiente', value: 'pending' }
+    { label: 'Activo', value: 'Activo' },
+    { label: 'Inactivo', value: 'Inactivo' },
+    { label: 'Pendiente', value: 'Pendiente' }
   ];
-
-  selectedStatus: string | null = null;
-  globalFilterValue: string = '';
 
   ngOnInit() {
     this.updateGlobalFilterFields();
-    this.filteredData = [...this.data];
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['columns']) {
       this.updateGlobalFilterFields();
-    }
-    if (changes['data']) {
-      this.filteredData = [...this.data];
-      this.filterData();
     }
   }
 
@@ -66,17 +61,12 @@ export class TableComponent implements OnInit, OnChanges {
     this.globalFilterFields = this.columns.map(col => col.field);
   }
 
-  getSeverity(status: string) {
-    switch (status) {
-      case 'active':
-        return 'success';
-      case 'inactive':
-        return 'danger';
-      case 'pending':
-        return 'warning';
-      default:
-        return 'info';
-    }
+  handlePage(event: any) {
+    this.onPage.emit(event);
+  }
+
+  handleFilter(event: any) {
+    this.onFilter.emit(event);
   }
 
   onRowSelect(event: any) {
@@ -87,39 +77,20 @@ export class TableComponent implements OnInit, OnChanges {
     this.rowAction.emit({ data: rowData, action });
   }
 
-  onGlobalFilter(event: Event, dt: any) {
-    this.globalFilterValue = (event.target as HTMLInputElement).value;
-    this.filterData();
-  }
-
   getFieldValue(row: any, field: string): any {
     return field.split('.').reduce((acc, part) => acc && acc[part], row);
   }
 
-  onStatusFilter(status: string | null) {
-    this.selectedStatus = status;
-    this.filterData();
-  }
-
-  filterData() {
-    let filtered = [...this.data];
-
-    // Filtrar por estado si hay uno seleccionado
-    if (this.selectedStatus) {
-      filtered = filtered.filter(row => this.getFieldValue(row, 'status') === this.selectedStatus);
+  getSeverity(status: string) {
+    switch (status) {
+      case 'Activo':
+        return 'success';
+      case 'Inactivo':
+        return 'danger';
+      case 'Pendiente':
+        return 'warning';
+      default:
+        return 'info';
     }
-
-    // Filtrar por texto global si hay texto
-    if (this.globalFilterValue) {
-      const filterValue = this.globalFilterValue.toLowerCase();
-      filtered = filtered.filter(row =>
-        this.globalFilterFields.some(field => {
-          const value = this.getFieldValue(row, field);
-          return value && value.toString().toLowerCase().includes(filterValue);
-        })
-      );
-    }
-
-    this.filteredData = filtered;
   }
 }

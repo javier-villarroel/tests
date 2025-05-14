@@ -1,10 +1,3 @@
-<!-- <app-button 
-  label="Buscar" 
-  icon="pi pi-search" 
-  iconPos="right"
-  [rounded]="true"
-  class="custom-class"
-></app-button>  -->
 <app-form-page-wrapper>
   <app-form-builder 
     [form]="form" 
@@ -13,10 +6,18 @@
     [buttonTitle]="'Guardar Cambios'"
     (submit)="onSubmit($event)">
   </app-form-builder>
-<app-table
-  [columns]="columns"
-  [data]="data"
-  (rowSelect)="onRowSelect($event)"
-  (rowAction)="onRowAction($event)">
-</app-table>
+  <app-table
+    [data]="data"
+    [columns]="columns"
+    [loading]="loading"
+    [paginator]="paginator"
+    [rows]="rows"
+    [first]="first"
+    [rowsPerPageOptions]="rowsPerPageOptions"
+    [totalRecords]="totalRecords"
+    (onPage)="onPageChange($event)"
+    (rowSelect)="onRowSelect($event)"
+    (rowAction)="onRowAction($event)"
+    (onFilter)="onFilter($event)">
+  </app-table>
 </app-form-page-wrapper>

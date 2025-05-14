@@ -1,16 +1,21 @@
 <p-table
   #dt
-  [value]="filteredData"
+  [value]="data"
   [columns]="columns"
   dataKey="id"
   [rows]="rows"
+  [first]="first"
   [rowsPerPageOptions]="rowsPerPageOptions"
   [loading]="loading"
   [paginator]="paginator"
+  [totalRecords]="totalRecords"
   [globalFilterFields]="globalFilterFields"
   [tableStyle]="{ 'min-width': '75rem' }"
   selectionMode="single"
   (onRowSelect)="onRowSelect($event)"
+  (onPage)="handlePage($event)"
+  (onFilter)="handleFilter($event)"
+  [lazy]="true"
 >
   <ng-template pTemplate="caption">
     <div class="flex justify-content-between align-items-center">
@@ -20,7 +25,7 @@
           pInputText 
           type="text" 
           placeholder="Buscar..." 
-          (input)="onGlobalFilter($event, dt)"
+          (input)="dt.filterGlobal($any($event.target).value, 'contains')"
         />
       </span>
       <button 
@@ -34,37 +39,48 @@
     </div>
   </ng-template>
  
-  <ng-template pTemplate="header" let-columns>
-    <tr>
-      <th *ngFor="let col of columns" [style.width]="col.width || 'auto'">
-        {{ col.header }}
-      </th>
-      <th>Acciones</th>
-    </tr>
-    <tr>
-      <th *ngFor="let col of columns">
-        <ng-container *ngIf="col.field === 'status'; else defaultFilter">
-          <p-dropdown 
-            [options]="statuses"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Filtrar estatus"
-            (onChange)="onStatusFilter($event.value)"
-            [showClear]="true"
-            styleClass="w-full"
-          ></p-dropdown>
-        </ng-container>
-        <ng-template #defaultFilter>
-          <p-columnFilter 
-            [type]="col.filterType || 'text'" 
-            [field]="col.field" 
-            [placeholder]="'Filtrar por ' + col.header"
-          ></p-columnFilter>
-        </ng-template>
-      </th>
-      <th></th>
-    </tr>
-  </ng-template>
+<ng-template pTemplate="header" let-columns>
+  <tr>
+    <th *ngFor="let col of columns" [style.width]="col.width || 'auto'">
+      {{ col.header }}
+    </th>
+    <th>Acciones</th>
+  </tr>
+  <tr>
+    <th *ngFor="let col of columns">
+      <ng-container *ngIf="col.field === 'status'; else defaultFilter">
+        <p-columnFilter
+          [field]="col.field"
+          [type]="'equals'"
+          [showOperator]="false"
+          [showMenu]="false"
+          [display]="'menu'"
+        >
+          <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+            <p-dropdown
+              [options]="statuses"
+              optionLabel="label"
+              optionValue="value"
+              [placeholder]="'Filtrar estado'"
+              [showClear]="true"
+              (onChange)="filter($event.value)"
+              [ngModel]="value"
+              styleClass="w-full"
+            ></p-dropdown>
+          </ng-template>
+        </p-columnFilter>
+      </ng-container>
+      <ng-template #defaultFilter>
+        <p-columnFilter 
+          [type]="col.filterType || 'text'" 
+          [field]="col.field" 
+          [placeholder]="'Filtrar por ' + col.header"
+        ></p-columnFilter>
+      </ng-template>
+    </th>
+    <th></th>
+  </tr>
+</ng-template>
 
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr>
@@ -107,7 +123,7 @@
 
   <ng-template pTemplate="emptymessage" let-columns="columns">
     <tr>
-      <td [attr.colspan]="columns.length + 1">No se encontraron registros</td>
+      <td [attr.colspan]="(columns?.length || 0) + 1">No se encontraron registros</td>
     </tr>
   </ng-template>
 </p-table>
