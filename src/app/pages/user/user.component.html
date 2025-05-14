@@ -4,7 +4,7 @@
   iconPos="right"
   [rounded]="true"
   class="custom-class"
-></app-button> -->
+></app-button>  -->
 <app-form-page-wrapper>
   <app-form-builder 
     [form]="form" 
@@ -13,4 +13,10 @@
     [buttonTitle]="'Guardar Cambios'"
     (submit)="onSubmit($event)">
   </app-form-builder>
+<app-table
+  [columns]="columns"
+  [data]="data"
+  (rowSelect)="onRowSelect($event)"
+  (rowAction)="onRowAction($event)">
+</app-table>
 </app-form-page-wrapper>

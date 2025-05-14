@@ -3,12 +3,14 @@ import { FormGroup } from '@angular/forms';
 import { InputComponent } from '../elements/input.component';
 import { SelectComponent } from '../elements/select.component';
 import { ButtonComponent } from '../elements/button/button.component';
+import { TableComponent } from '../elements/table/table.component';
 
 
 const components: {[key: string]: any} = {
   'input': InputComponent,
   'select': SelectComponent,
-  'button': ButtonComponent
+  'button': ButtonComponent,
+  'table': TableComponent
 };
 
 @Directive({

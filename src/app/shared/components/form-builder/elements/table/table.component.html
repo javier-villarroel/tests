@@ -1,0 +1,113 @@
+<p-table
+  #dt
+  [value]="filteredData"
+  [columns]="columns"
+  dataKey="id"
+  [rows]="rows"
+  [rowsPerPageOptions]="rowsPerPageOptions"
+  [loading]="loading"
+  [paginator]="paginator"
+  [globalFilterFields]="globalFilterFields"
+  [tableStyle]="{ 'min-width': '75rem' }"
+  selectionMode="single"
+  (onRowSelect)="onRowSelect($event)"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex justify-content-between align-items-center">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input 
+          pInputText 
+          type="text" 
+          placeholder="Buscar..." 
+          (input)="onGlobalFilter($event, dt)"
+        />
+      </span>
+      <button 
+        pButton 
+        type="button" 
+        label="Exportar CSV" 
+        icon="pi pi-file-excel" 
+        class="p-button-success p-button-sm"
+        (click)="dt.exportCSV()"
+      ></button>
+    </div>
+  </ng-template>
+ 
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngFor="let col of columns" [style.width]="col.width || 'auto'">
+        {{ col.header }}
+      </th>
+      <th>Acciones</th>
+    </tr>
+    <tr>
+      <th *ngFor="let col of columns">
+        <ng-container *ngIf="col.field === 'status'; else defaultFilter">
+          <p-dropdown 
+            [options]="statuses"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Filtrar estatus"
+            (onChange)="onStatusFilter($event.value)"
+            [showClear]="true"
+            styleClass="w-full"
+          ></p-dropdown>
+        </ng-container>
+        <ng-template #defaultFilter>
+          <p-columnFilter 
+            [type]="col.filterType || 'text'" 
+            [field]="col.field" 
+            [placeholder]="'Filtrar por ' + col.header"
+          ></p-columnFilter>
+        </ng-template>
+      </th>
+      <th></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr>
+      <td *ngFor="let col of columns">
+        <ng-container [ngSwitch]="col.type">
+          <ng-container *ngSwitchCase="'status'">
+            <p-tag 
+              [value]="getFieldValue(rowData, col.field)" 
+              [severity]="getSeverity(getFieldValue(rowData, col.field))">
+            </p-tag>
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ getFieldValue(rowData, col.field) }}
+          </ng-container>
+        </ng-container>
+      </td>
+      <td class="whitespace-nowrap">
+        <p-button 
+          icon="pi pi-pencil" 
+          styleClass="mr-2 align-middle"
+          [rounded]="true" 
+          [outlined]="true" 
+          (onClick)="onActionClick(rowData, 'edit')" 
+          pTooltip="Editar"
+          tooltipPosition="top"
+        ></p-button>
+        <p-button 
+          icon="pi pi-trash" 
+          severity="danger" 
+          styleClass="align-middle"
+          [rounded]="true" 
+          [outlined]="true" 
+          (onClick)="onActionClick(rowData, 'delete')" 
+          pTooltip="Eliminar"
+          tooltipPosition="top"
+        ></p-button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage" let-columns="columns">
+    <tr>
+      <td [attr.colspan]="columns.length + 1">No se encontraron registros</td>
+    </tr>
+  </ng-template>
+</p-table>
